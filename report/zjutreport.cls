@@ -29,7 +29,9 @@
 
 \ProcessOptions\relax
 \LoadClass[12pt,oneside,openany]{book}
-\RequirePackage[a4paper,
+\RequirePackage
+[
+	a4paper,
     text={148true mm,223true mm},
     top=25.4true mm,    % 上边距
     head=10.4true mm,
@@ -41,17 +43,33 @@
 ]{geometry}
 
 \RequirePackage{graphicx}                       % 支持插图处理
+\RequirePackage{amssymb}                        % 数学符号生成命令 必须放在xunicode和xltxtra前
 \RequirePackage{titlesec}                       % 控制标题的宏包
 \RequirePackage{titletoc}                       % 控制目录的宏包
+% see issue #27
+\RequirePackage{expl3}							% \ExplSyntaxOn 依赖于 expl3，否则可能会编译不过
+% see issue #5
+\ExplSyntaxOn
+\cs_new_eq:NN \__save_dim_max:nn \dim_max:nn
+\cs_new_eq:NN \__save_dim_min:nn \dim_min:nn
+\AtBeginDocument
+{
+    \cs_set_eq:NN \dim_max:nn \__save_dim_max:nn
+    \cs_set_eq:NN \dim_min:nn \__save_dim_min:nn
+}
+\ExplSyntaxOff
+\RequirePackage{fontspec,xunicode,xltxtra}      % XeLaTeX相关字体字库，其中fontspec必须放在xeCJK前
 \RequirePackage{fancyhdr}                       % fancyhdr宏包 支持页眉和页脚的相关定义
 % XXX evince打开生成的pdf无法选择复制文字的问题可能是slantfont选项引起的，有待观察
-\RequirePackage[slantfont, CJKnumber]{xeCJK}    %xeCJK中文支持，并提供将阿拉伯数字转换成中文数字的命令
+\usepackage[CJKnumber, CJKmath, SlantFont, CJKchecksingle]{xeCJK}	% BoldFont 用了后封面字体变粗
+%\usepackage[CJKnumber, CJKmath, BoldFont, SlantFont, CJKchecksingle]{xeCJK}
+% xeCJK中文支持，并提供将阿拉伯数字转换成中文数字的命令，在math中使用CJK字符，并启用加粗、斜体、检测一个CJK字符占一行
 \RequirePackage{color}                          % 支持彩色
-\RequirePackage{amsmath}                        % AMSLaTeX宏包 用来排出更加漂亮的公式
-\RequirePackage{amssymb}                        % 数学符号生成命令
+\RequirePackage{amsmath}                        % AMSLaTeX宏包 用来排出更加漂亮的公式 必须放在xunicode, xltxtra后
+\RequirePackage{amsfonts}						% AMS字体 必须放在xunicode, xltxtra后
 \newcommand\hmax{0}                             % insert before bm package
 \RequirePackage{bm}                             % 处理数学公式中的黑斜体的宏包
-\RequirePackage[below]{placeins}                %允许上一个section的浮动图形出现在下一个section的开始部分,还提供\FloatBarrier命令,使所有未处理的浮动图形立即被处理
+\RequirePackage[below]{placeins}                % 允许上一个section的浮动图形出现在下一个section的开始部分,还提供\FloatBarrier命令,使所有未处理的浮动图形立即被处理
 \RequirePackage{flafter}                        % 使得所有浮动体不能被放置在其浮动环境之前，以免浮动体在引述它的文本之前出现.
 \RequirePackage{float}                          % 设置图片浮动格式
 \RequirePackage{multirow}                       % 使用Multirow宏包，使得表格可以合并多个row格
@@ -72,21 +90,10 @@
 %\RequirePackage{hypbmsec}                      % 用来控制书签中标题显示内容
 \RequirePackage{CJKfntef}
 \RequirePackage{times}
-% see issue #27
-\RequirePackage{expl3}	% \ExplSyntaxOn 依赖于 expl3，否则可能会编译不过
-%see issue #5
-\ExplSyntaxOn
-\cs_new_eq:NN \__save_dim_max:nn \dim_max:nn
-\cs_new_eq:NN \__save_dim_min:nn \dim_min:nn
-\AtBeginDocument
-{
-    \cs_set_eq:NN \dim_max:nn \__save_dim_max:nn
-    \cs_set_eq:NN \dim_min:nn \__save_dim_min:nn
-}
-\ExplSyntaxOff
-\RequirePackage{fontspec,xunicode,xltxtra}      % XeLaTeX相关字体字库 
-%如果您的pdf制作中文书签有乱码使用如下命令，就可以解决了
-\RequirePackage[xetex, unicode,
+% 如果您的pdf制作中文书签有乱码使用如下命令，就可以解决了
+\RequirePackage
+[
+	xetex, 
     pdfstartview=FitH,
     CJKbookmarks=true,
     bookmarksnumbered=true,
@@ -102,30 +109,34 @@
 \RequirePackage{ifthen}
 \RequirePackage{calc}
 \RequirePackage{setspace}
-\RequirePackage{listings} %插入代码
-\RequirePackage{xcolor} %代码高亮
+\RequirePackage{listings}						% 插入代码
+\RequirePackage{xcolor}							% 代码高亮
 
 %% 代码高亮设置
-\lstset{numbers=left, %设置行号位置
-        numberstyle=\tiny, %设置行号大小
-        keywordstyle=\color{blue}, %设置关键字颜色
-        commentstyle=\color[cmyk]{1,0,1,0}, %设置注释颜色
-        frame=single, %设置边框格式
-        escapeinside=``, %逃逸字符，用于显示中文
-        breaklines, %自动折行
-        extendedchars=false,
-        xleftmargin=2em,xrightmargin=2em, aboveskip=1em, %设置边距
-        tabsize=4, %设置tab空格数
-        showspaces=false %不显示空格
-       }
-	   
-%支持算法环境
+\lstset
+{
+	basicstyle=\ttfamily,
+	numbers=left,								% 设置行号位置
+	%numberstyle=\tiny,							% 设置行号大小
+	keywordstyle=\color{blue},					% 设置关键字颜色
+	commentstyle=\color[cmyk]{1,0,1,0},			% 设置注释颜色
+	frame=single,								% 设置边框格式
+	escapeinside=``,							% 逃逸字符，用于显示中文
+	breaklines,									% 自动折行
+	showspaces=false							% 不显示空格
+	showstringspaces=false,
+	extendedchars=false,
+	%xleftmargin=2em,xrightmargin=2em, aboveskip=1em,	% 设置边距
+	tabsize=4,									% 设置tab空格数
+}
+
+% 支持算法环境
 \RequirePackage[boxed,ruled,lined]{algorithm2e}
 \RequirePackage{algorithmic}
 
 %% extra from zju cls
-% \RequirePackage{mathrsfs}
-% \RequirePackage{amsthm}
+%\RequirePackage{mathrsfs}
+%\RequirePackage{amsthm}
 %\RequirePackage[normalem]{ulem}
 %\RequirePackage[usenames]{color}
 %\RequirePackage{url}
@@ -147,56 +158,56 @@
 %     如 「仿宋」 的别称由「fs」 变成了「fangsong」
 % 
 \setCJKfamilyfont{SongTi}{SimSun}
-\DeclareRobustCommand{\songti}{\CJKfamily{SongTi}}     % 宋体
+\DeclareRobustCommand{\songti}{\CJKfamily{SongTi}}							% 宋体
 \setCJKfamilyfont{FangSong}{FangSong}
-\DeclareRobustCommand{\fangsong}{\CJKfamily{FangSong}} % 仿宋
+\DeclareRobustCommand{\fangsong}{\CJKfamily{FangSong}}						% 仿宋
 \setCJKfamilyfont{KaiShu}{KaiTi}
-\DeclareRobustCommand{\kaiti}{\CJKfamily{KaiShu}}      % 楷体
+\DeclareRobustCommand{\kaiti}{\CJKfamily{KaiShu}}							% 楷体
 \setCJKfamilyfont{HeiTi}{SimHei}
-\DeclareRobustCommand{\heiti}{\CJKfamily{HeiTi}}       % 黑体
+\DeclareRobustCommand{\heiti}{\CJKfamily{HeiTi}}							% 黑体
 \setCJKfamilyfont{LiShu}{LiSu}
-\DeclareRobustCommand{\lishu}{\CJKfamily{LiShu}}       % 隶书
+\DeclareRobustCommand{\lishu}{\CJKfamily{LiShu}}							% 隶书
 \setCJKfamilyfont{YouYuan}{YouYuan}
-\DeclareRobustCommand{\youti}{\CJKfamily{YouYuan}}     % 幼圆
+\DeclareRobustCommand{\youti}{\CJKfamily{YouYuan}}							% 幼圆
 \setCJKfamilyfont{STFangsong}{STFangsong}
-\DeclareRobustCommand{\stfangsong}{\CJKfamily{STFangsong}} % ST仿宋
+\DeclareRobustCommand{\stfangsong}{\CJKfamily{STFangsong}}					% ST仿宋
 \setCJKfamilyfont{STXingkai}{STXingkai}
-\DeclareRobustCommand{\stxingkai}{\CJKfamily{STXingkai}}   % ST行楷
-\setCJKfamilyfont{tnroman}{Times New Roman} % Times New Roman
-\DeclareRobustCommand{\tnroman}{\CJKfamily{tnroman}}
+\DeclareRobustCommand{\stxingkai}{\CJKfamily{STXingkai}}					% ST行楷
+\setCJKfamilyfont{tnroman}{Times New Roman}
+\DeclareRobustCommand{\tnroman}{\CJKfamily{tnroman}}						% Times New Roman
 
 \frenchspacing
 \widowpenalty=10000
 \setlength{\parskip}{0pt}
 \setlength{\parindent}{2.5em}
-\onehalfspacing % 全局 1.5倍行距
+\onehalfspacing									% 全局 1.5倍行距
 \renewcommand{\arraystretch}{0.6}
-\captionnamefont{\wuhao\songti} % 图/表标题 五号宋体
+\captionnamefont{\wuhao\songti}					% 图/表标题 五号宋体
 \captiontitlefont{\wuhao\songti}
 
-\DeclareRobustCommand{\chuhao}{\fontsize{42pt}{\baselineskip}\selectfont}  % 初号
-\DeclareRobustCommand{\xiaochu}{\fontsize{36pt}{\baselineskip}\selectfont} % 小初
-\DeclareRobustCommand{\yihao}{\fontsize{26pt}{\baselineskip}\selectfont}   % 一号
-\DeclareRobustCommand{\xiaoyi}{\fontsize{24pt}{\baselineskip}\selectfont}  % 小一
-\DeclareRobustCommand{\erhao}{\fontsize{22pt}{\baselineskip}\selectfont}   % 二号
-\DeclareRobustCommand{\xiaoer}{\fontsize{18pt}{\baselineskip}\selectfont}  % 小二
-\DeclareRobustCommand{\sanhao}{\fontsize{16pt}{\baselineskip}\selectfont}  % 三号 
-\DeclareRobustCommand{\xiaosan}{\fontsize{15pt}{\baselineskip}\selectfont} % 小三
-\DeclareRobustCommand{\sihao}{\fontsize{14pt}{\baselineskip}\selectfont}   % 四号
-\DeclareRobustCommand{\xiaosi}{\fontsize{12pt}{\baselineskip}\selectfont}  % 小四
-\DeclareRobustCommand{\wuhao}{\fontsize{10.5pt}{\baselineskip}\selectfont} % 五号
-\DeclareRobustCommand{\xiaowu}{\fontsize{9pt}{\baselineskip}\selectfont}   % 小五
-\DeclareRobustCommand{\liuhao}{\fontsize{7.5pt}{\baselineskip}\selectfont} % 六号
-\DeclareRobustCommand{\xiaoliu}{\fontsize{6.5pt}{\baselineskip}\selectfont}% 小六
-\DeclareRobustCommand{\qihao}{\fontsize{5.5pt}{\baselineskip}\selectfont}  % 七号
-\DeclareRobustCommand{\bahao}{\fontsize{5pt}{\baselineskip}\selectfont}    % 八号
+\DeclareRobustCommand{\chuhao}{\fontsize{42pt}{\baselineskip}\selectfont}	% 初号
+\DeclareRobustCommand{\xiaochu}{\fontsize{36pt}{\baselineskip}\selectfont}	% 小初
+\DeclareRobustCommand{\yihao}{\fontsize{26pt}{\baselineskip}\selectfont}	% 一号
+\DeclareRobustCommand{\xiaoyi}{\fontsize{24pt}{\baselineskip}\selectfont}	% 小一
+\DeclareRobustCommand{\erhao}{\fontsize{22pt}{\baselineskip}\selectfont}	% 二号
+\DeclareRobustCommand{\xiaoer}{\fontsize{18pt}{\baselineskip}\selectfont}	% 小二
+\DeclareRobustCommand{\sanhao}{\fontsize{16pt}{\baselineskip}\selectfont}	% 三号 
+\DeclareRobustCommand{\xiaosan}{\fontsize{15pt}{\baselineskip}\selectfont}	% 小三
+\DeclareRobustCommand{\sihao}{\fontsize{14pt}{\baselineskip}\selectfont}	% 四号
+\DeclareRobustCommand{\xiaosi}{\fontsize{12pt}{\baselineskip}\selectfont}	% 小四
+\DeclareRobustCommand{\wuhao}{\fontsize{10.5pt}{\baselineskip}\selectfont}	% 五号
+\DeclareRobustCommand{\xiaowu}{\fontsize{9pt}{\baselineskip}\selectfont}	% 小五
+\DeclareRobustCommand{\liuhao}{\fontsize{7.5pt}{\baselineskip}\selectfont}	% 六号
+\DeclareRobustCommand{\xiaoliu}{\fontsize{6.5pt}{\baselineskip}\selectfont}	% 小六
+\DeclareRobustCommand{\qihao}{\fontsize{5.5pt}{\baselineskip}\selectfont}	% 七号
+\DeclareRobustCommand{\bahao}{\fontsize{5pt}{\baselineskip}\selectfont}		% 八号
 
 % 0: chapter
 % 1: section
 % 2: subsection
 % 3: subsubsection
-\setcounter{secnumdepth}{3} % 自动编号最大深度 到subsubsection
-\setcounter{tocdepth}{2} % 目录显示深度到 subsection
+\setcounter{secnumdepth}{3}						% 自动编号最大深度 到subsubsection
+\setcounter{tocdepth}{2}						% 目录显示深度到 subsection
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -239,23 +250,23 @@
 
 %%% 中文关键词
 \newcommand\keywordsc[1]{\vspace{1em}\noindent%
-    % XXX: 用songti bfseries下没有粗体效果
-    {\heiti\xiaosi\textbf{\zjut@label@keywordsc}}\quad{\songti\xiaosi{#1}}%
+	% XXX: 用songti bfseries下没有粗体效果
+	{\heiti\xiaosi\textbf{\zjut@label@keywordsc}}\quad{\songti\xiaosi{#1}}%
 }
 
 \newcommand\reportheadtitle{\zjut@label@defaultheadtitle}
 \newcommand\reporttitle{\zjut@label@defaulttitle}
 \ifzjut@translation
-    \renewcommand\reporttitle{\zjut@label@translationtitle}
-    \renewcommand\reportheadtitle{\zjut@label@translationheadtitle}
+\renewcommand\reporttitle{\zjut@label@translationtitle}
+\renewcommand\reportheadtitle{\zjut@label@translationheadtitle}
 \fi
 \ifzjut@literaturereview
-    \renewcommand\reporttitle{\zjut@label@literaturereviewtitle}
-    \renewcommand\reportheadtitle{\zjut@label@literaturereviewheadtitle}
+\renewcommand\reporttitle{\zjut@label@literaturereviewtitle}
+\renewcommand\reportheadtitle{\zjut@label@literaturereviewheadtitle}
 \fi
 \ifzjut@proposal
-    \renewcommand\reporttitle{\zjut@label@proposaltitle}
-    \renewcommand\reportheadtitle{\zjut@label@proposalheadtitle}
+\renewcommand\reporttitle{\zjut@label@proposaltitle}
+\renewcommand\reportheadtitle{\zjut@label@proposalheadtitle}
 \fi
 
 %%% 页眉页脚{
@@ -263,9 +274,9 @@
 \fancyhf{}
 \renewcommand{\headrulewidth}{0.5pt}
 \fancypagestyle{plain}{
-  \fancyhf{}
-  \fancyhead[C]{\xiaowu\songti \reportheadtitle}
-  \fancyfoot[C]{\xiaowu\thepage}
+	\fancyhf{}
+	\fancyhead[C]{\xiaowu\songti \reportheadtitle}
+	\fancyfoot[C]{\xiaowu\thepage}
 }
 \fancyhf{}
 \fancyhead[C]{\xiaowu\songti \reportheadtitle}
@@ -284,43 +295,43 @@
 % 重定义参考文献样式，来自thu
 \makeatletter
 \renewenvironment{thebibliography}[1]{%
-    \chapter{\heiti\bfseries{\bibname}}%
- \wuhao
- \list{\@biblabel{\@arabic\c@enumiv}}%
- {\renewcommand{\makelabel}[1]{##1\hfill}
-   \settowidth\labelwidth{0.5cm}
-   \setlength{\labelsep}{0pt}
-   \setlength{\itemindent}{0pt}
-   \setlength{\leftmargin}{\labelwidth+\labelsep}
-   \addtolength{\itemsep}{-0.7em}
-   \usecounter{enumiv}%
-   \let\p@enumiv\@empty
-   \renewcommand\theenumiv{\@arabic\c@enumiv}}%
- \sloppy\frenchspacing
- \clubpenalty4000%
- \@clubpenalty \clubpenalty
- \widowpenalty4000%
- \interlinepenalty4000%
- \sfcode`\.\@m}
+	\chapter{\heiti\bfseries{\bibname}}%
+	\wuhao
+	\list{\@biblabel{\@arabic\c@enumiv}}%
+	{\renewcommand{\makelabel}[1]{##1\hfill}
+		\settowidth\labelwidth{0.5cm}
+		\setlength{\labelsep}{0pt}
+	\setlength{\itemindent}{0pt}
+		\setlength{\leftmargin}{\labelwidth+\labelsep}
+	\addtolength{\itemsep}{-0.7em}
+		\usecounter{enumiv}%
+		\let\p@enumiv\@empty
+	\renewcommand\theenumiv{\@arabic\c@enumiv}}%
+	\sloppy\frenchspacing
+	\clubpenalty4000%
+	\@clubpenalty \clubpenalty
+	\widowpenalty4000%
+	\interlinepenalty4000%
+\sfcode`\.\@m}
 {\def\@noitemerr
- {\@latex@warning{Empty `thebibliography' environment}}%
+	{\@latex@warning{Empty `thebibliography' environment}}%
  \endlist\frenchspacing}
-\makeatother
+ \makeatother
 
 %   \addtolength{\bibsep}{-0.5em} % 缩小参考文献间的垂直间距
 %   \setlength{\bibhang}{2em} %每个条目自第二行起缩进的距离
 
 % 参考文献引用作为上标出现
 % \newcommand{\citeup}[1]{\textsuperscript{\cite{#1}}}
-\makeatletter
-\def\@cite#1#2{\textsuperscript{[{#1\if@tempswa , #2\fi}]}}
-\makeatother
+ \makeatletter
+ \def\@cite#1#2{\textsuperscript{[{#1\if@tempswa , #2\fi}]}}
+ \makeatother
 %% 引用格式
-\bibpunct{[}{]}{,}{s}{}{,}
+ \bibpunct{[}{]}{,}{s}{}{,}
 
-\newcolumntype{.}{D{.}{.}{2.4}}
+ \newcolumntype{.}{D{.}{.}{2.4}}
 
 % 用法： 1 & 2 & \tabincell{c}{aaaaaa\\aaaaaa}
-\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}} % 表格内容可以断行
+ \newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}} % 表格内容可以断行
 
 %% End of file `zjutreport.cls'.

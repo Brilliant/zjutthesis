@@ -1,5 +1,5 @@
 #
-# build zjutmain.pdf
+# build proposal.pdf, translation.pdf, literaturereview.pdf
 #
 
 # XXX: bibtex 会报错 如 http://bbs.sjtu.edu.cn/bbstcon,board,TeX_LaTeX,reid,1299228706.html 
