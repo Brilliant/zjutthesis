@@ -58,7 +58,6 @@
 % \RequirePackage[slantfont, CJKnumber, boldfont]{xeCJK}    %xeCJK中文粗体、斜体、数字支持，并提供将阿拉伯数字转换成中文数字的命令
 % xeCJK中文支持，并提供将阿拉伯数字转换成中文数字的命令，在math中使用CJK字符，并启用加粗、斜体、检测一个CJK字符占一行
 
-
 \RequirePackage{color}                          % 支持彩色
 \RequirePackage{amsmath}                        % AMSLaTeX宏包 用来排出更加漂亮的公式 必须放在xunicode, xltxtra后
 \RequirePackage{amsfonts}						% AMS字体 必须放在xunicode, xltxtra后
