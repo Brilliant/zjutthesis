@@ -211,6 +211,7 @@
 %%%%%%%%%%%%%%%%%%%%
 
 %%% 1级标题，四号，黑体，居中，加粗，段前12磅，段后6磅，1.5倍行距 {
+\titleclass{\chapter}{straight}
 \titleformat{\chapter}[block]{\sihao\heiti\bfseries}{\ifzjut@translation{\thechapter}\else{\CJKnumber{\thechapter}}\fi、}{1ex}{}{}
 \titlespacing{\chapter}{0pt}{12pt}{6pt}
 \titlecontents{chapter}[0.1ex]
@@ -291,11 +292,12 @@
 \fancyfoot[C]{\xiaowu\thepage}
 %%% }
 
-\renewcommand{\figurename}{\zjut@label@figurename}
-\renewcommand{\thefigure}{\thechapter-\arabic{figure}}
-\renewcommand{\tablename}{\zjut@label@tablename}
-\renewcommand{\thetable}{\thechapter-\arabic{table}}
+\renewcommand{\figurename}{~\zjut@label@figurename~}
+\renewcommand{\thefigure}{~\thechapter-\arabic{figure}~}
+\renewcommand{\tablename}{~\zjut@label@tablename~}
+\renewcommand{\thetable}{~\thechapter-\arabic{table}~}
 
+\renewcommand{\algorithmcfname}{\zjut@label@algname}
 % \setlength{\belowcaptionskip}{2mm}
 \renewcommand{\footnotesize}{\xiaowu}
 
