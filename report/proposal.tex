@@ -27,9 +27,9 @@
 \let\clearpage\relax % chapter之后不换页
 
 %%%%%%%%%% 标题 %%%%%%%%%%
-\vspace*{10.0mm}
-\centerline{\sihao\heiti\bfseries{浙江工业大学本科生毕业设计开题报告模板}}
-\vspace*{5.0mm}
+\vspace*{3.0mm}
+\centerline{\sanhao\heiti\bfseries{浙江工业大学本科生毕业设计开题报告模板}}
+\vspace*{3.0mm}
 
 %%%%%%%%%% 摘要 %%%%%%%%%%
 %\include{preface/abstract}     % 中文摘要
@@ -41,13 +41,11 @@
 \include{body/tables}
 \include{body/equations}
 \include{body/others}
-
-\clearpage % 显式换页，使书签定位准确
-\bibliography{references/reference}
-
 \backmatter
 \endgroup % 组结束
 %%%%%%%%%% 参考文献 %%%%%%%%%%
+\clearpage % 显式换页，使书签定位准确
+\bibliography{references/reference}
 \nocite{*}                                   % 若将此命令屏蔽掉，则未引用的文献不会出现在文后的参考文献中。
 
 %%%%%%%%%% 附录 %%%%%%%%%%

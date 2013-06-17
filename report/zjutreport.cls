@@ -29,17 +29,21 @@
 
 \ProcessOptions\relax
 \LoadClass[12pt,oneside,openany]{book}
-\RequirePackage
-[
-	a4paper,
-    text={148true mm,223true mm},
-    top=25.4true mm,
-    head=10.4true mm,
-    headsep=2.5true mm, % 微调
-    bottom=25.4true mm,
-    foot=7.9true mm,
-    left=31.75true mm,
-    right=31.75true mm
+\RequirePackage[a4paper,
+% 页眉0.59 inches = 14.986 mm，页脚0.69 inches = 17.526 mm
+%     text={148true mm,223true mm},
+%     top=25.4true mm,
+%     head=10.4true mm,
+%     headsep=2.5true mm, % 微调
+%     bottom=25.4true mm,
+%     foot=7.9true mm,
+    textwidth=148.082true mm,
+    textheight=240true mm, % 页眉线 - 最后一行文字底端 XXX @mckelvin 人工调的
+    head=10true mm,
+    headsep=10true mm,
+    footskip=10true mm,
+    includehead,
+    includefoot,
 ]{geometry}
 
 \RequirePackage{graphicx}                       % 支持插图处理
@@ -60,8 +64,8 @@
 \ExplSyntaxOff
 \RequirePackage{fontspec,xunicode,xltxtra}      % XeLaTeX相关字体字库，其中fontspec必须放在xeCJK前
 \RequirePackage{fancyhdr}                       % fancyhdr宏包 支持页眉和页脚的相关定义
-% XXX evince打开生成的pdf无法选择复制文字的问题可能是slantfont选项引起的，有待观察
 
+% XXX evince打开生成的pdf无法选择复制文字的问题可能是slantfont选项引起的，有待观察
 \RequirePackage[CJKnumber, CJKmath, boldfont, slantfont, CJKchecksingle]{xeCJK}
 % \RequirePackage[slantfont, CJKnumber, boldfont]{xeCJK}    %xeCJK中文粗体、斜体、数字支持，并提供将阿拉伯数字转换成中文数字的命令
 % xeCJK中文支持，并提供将阿拉伯数字转换成中文数字的命令，在math中使用CJK字符，并启用加粗、斜体、检测一个CJK字符占一行
@@ -169,9 +173,13 @@
 
 \frenchspacing
 \widowpenalty=10000
-\setlength{\parskip}{0pt}
+\setlength{\parskip}{0pt} % 段距
 \setlength{\parindent}{2.5em}
-\onehalfspacing									% 全局 1.5倍行距
+
+
+\renewcommand{\singlespacing}{\setstretch{1.09}} % 对应Word中单倍行距
+\renewcommand{\onehalfspacing}{\setstretch{1.6}} % 对应Word中1.5倍行距
+\onehalfspacing % 默认1.5倍行距
 
 \renewcommand{\arraystretch}{0.6}
 \captionnamefont{\wuhao\songti}					% 图/表标题 五号宋体
@@ -213,7 +221,7 @@
 %%% 1级标题，四号，黑体，居中，加粗，段前12磅，段后6磅，1.5倍行距 {
 \titleclass{\chapter}{straight}
 \titleformat{\chapter}[block]{\sihao\heiti\bfseries}{\ifzjut@translation{\thechapter}\else{\CJKnumber{\thechapter}}\fi、}{1ex}{}{}
-\titlespacing{\chapter}{0pt}{12pt}{6pt}
+\titlespacing{\chapter}{0pt}{-6pt}{0pt}
 \titlecontents{chapter}[0.1ex]
         {}
         {\songti\bfseries{\CJKnumber{\thecontentslabel{}}、\hspace{1ex}}}
@@ -223,7 +231,7 @@
 
 %%% 2级标题，小四，黑体，段前6磅，段后6磅，1.5倍行距 {
 \titleformat{\section}[hang]{\xiaosi\heiti}{\thesection}{1em}{}{}
-\titlespacing{\section}{0pt}{6pt}{6pt}
+\titlespacing{\section}{0pt}{-3pt}{0pt}
 \titlecontents{section}[1.0ex]
         {}
         {\hspace{1em}\thecontentslabel\hspace{1em}}
@@ -233,7 +241,7 @@
 
 %%% 3级标题，小四，黑体，段前段后６磅，1.5倍行距，建议不使用四级或更高级别目录、标题 {
 \titleformat{\subsection}[hang]{\xiaosi\heiti}{\thesubsection}{1em}{}{}
-\titlespacing{\subsection}{0pt}{6pt}{6pt}
+\titlespacing{\subsection}{0pt}{-3pt}{0pt}
 \titlecontents{subsection}[1.0ex]
         {}
         {\hspace{2em}\thecontentslabel\hspace{1em}}
@@ -302,12 +310,7 @@
 \renewcommand{\footnotesize}{\xiaowu}
 
 %%%%%%%%%% References %%%%%%%%%%%%%%%%%
-
-\ifzjut@proposal
-  \renewcommand{\bibname}{\zjut@label@bibname@alt}
-\else
-  \renewcommand{\bibname}{\zjut@label@bibname}
-\fi
+\renewcommand{\bibname}{\zjut@label@bibname}
 \bibliographystyle{GBT7714-2005NLang-ZJUT}
 \urlstyle{same}
 % 重定义参考文献样式，来自thu
@@ -322,6 +325,7 @@
    \setlength{\itemindent}{0pt}
    \setlength{\leftmargin}{\labelwidth+\labelsep}
    \addtolength{\itemsep}{-0.7em}
+   \onehalfspacing
    \usecounter{enumiv}%
    \let\p@enumiv\@empty
    \renewcommand\theenumiv{\@arabic\c@enumiv}}%

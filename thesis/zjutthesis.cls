@@ -21,17 +21,20 @@
 
 \ProcessOptions\relax
 \LoadClass[12pt,oneside,openany]{book}
-\RequirePackage
-[
-	a4paper,
-    text={148true mm,223true mm},
-    top=37true mm,
-    head=7true mm,
-    headsep=2.5true mm, % 微调
-    bottom=37true mm,
-    foot=7true mm,
-    left=31true mm,
-    right=31true mm
+\RequirePackage[a4paper,
+% A4宽度 8.27 inches = 210.058 mm
+% A4高度 11.69 inches = 296.926 mm
+% 左右边距 1.22 inches = 30.988 mm
+% 上下边距 1.46 inches = 37.084 mm
+% 页眉页脚高度 1.18 inches = 29.972 mm
+% 210.058 - 30.988 * 2 = 148.082 mm
+% 296.926 - 37.084 * 222.758 mm
+    textwidth=148.082true mm,
+    textheight=222.758true mm, % 页眉线 - 最后一行文字底端
+    head=12true mm,
+    headsep=2true mm,
+    footskip=7true mm,
+    includehead,
 ]{geometry}
 
 \RequirePackage{graphicx}                       % 支持插图处理
@@ -52,8 +55,8 @@
 \ExplSyntaxOff
 \RequirePackage{fontspec,xunicode,xltxtra}      % XeLaTeX相关字体字库，其中fontspec必须放在xeCJK前
 \RequirePackage{fancyhdr}                       % fancyhdr宏包 支持页眉和页脚的相关定义
-% XXX evince打开生成的pdf无法选择复制文字的问题可能是slantfont选项引起的，有待观察
 
+% XXX evince打开生成的pdf无法选择复制文字的问题可能是slantfont选项引起的，有待观察
 \RequirePackage[CJKnumber, CJKmath, boldfont, slantfont, CJKchecksingle]{xeCJK}
 % \RequirePackage[slantfont, CJKnumber, boldfont]{xeCJK}    %xeCJK中文粗体、斜体、数字支持，并提供将阿拉伯数字转换成中文数字的命令
 % xeCJK中文支持，并提供将阿拉伯数字转换成中文数字的命令，在math中使用CJK字符，并启用加粗、斜体、检测一个CJK字符占一行
@@ -161,9 +164,13 @@
 
 \frenchspacing
 \widowpenalty=10000
-\setlength{\parskip}{0pt}
+\setlength{\parskip}{0pt} % 段距
 \setlength{\parindent}{2.5em}
-\onehalfspacing									% 全局 1.5倍行距
+
+\renewcommand{\singlespacing}{\setstretch{1.09}} % 对应Word中单倍行距
+\renewcommand{\onehalfspacing}{\setstretch{1.6}} % 对应Word中1.5倍行距
+\onehalfspacing % 默认1.5倍行距
+
 \renewcommand{\arraystretch}{0.6}
 \captionnamefont{\wuhao\songti}					% 图/表标题 五号宋体
 \captiontitlefont{\wuhao\songti}
@@ -202,8 +209,8 @@
 %%%%%%%%%%%%%%%%%%%%
 
 %%% 1级标题，小二，黑体，居中，加粗，段前段后18磅，1.5倍行距 {
-\titleformat{\chapter}[block]{\xiaoer\heiti\filcenter\bfseries}{第\CJKnumber{\thechapter}章}{1ex}{}{}
-\titlespacing{\chapter}{0pt}{18pt}{18pt}
+\titleformat{\chapter}[block]{\onehalfspacing  \xiaoer\heiti\filcenter\bfseries}{第\CJKnumber{\thechapter}章}{1ex}{}{}
+\titlespacing{\chapter}{0pt}{-9pt}{18pt} % XXX 调整行距后@mckelvin 人工调的
 \titlecontents{chapter}[0.1ex]
         {}
         {\wuhao\bfseries{第\CJKnumber{\thecontentslabel{}}章\hspace{1ex}}}
@@ -212,8 +219,8 @@
 %%% }
 
 %%% 2级标题，小三，宋体，加粗，段前12磅，段后6磅，1.5倍行距 {
-\titleformat{\section}[hang]{\xiaosan\songti\bfseries}{\thesection}{1em}{}{}
-\titlespacing{\section}{0pt}{12pt}{6pt}
+\titleformat{\section}[hang]{\onehalfspacing \xiaosan\songti\bfseries}{\thesection}{1em}{}{}
+\titlespacing{\section}{0pt}{-6pt}{6pt} % XXX 调整行距后@mckelvin 人工调的
 \titlecontents{section}[1.0ex]
         {}
         {\wuhao\hspace{1ex}\thecontentslabel\hspace{1em}}
@@ -222,8 +229,8 @@
 %%% }
 
 %%% 3级标题，四号，宋体，加粗，段前６磅，1.5倍行距，建议不使用四级或更高级别目录、标题 {
-\titleformat{\subsection}[hang]{\sihao\songti\bfseries}{\thesubsection}{1em}{}{}
-\titlespacing{\subsection}{0pt}{6pt}{0pt}
+\titleformat{\subsection}[hang]{\onehalfspacing \sihao\songti\bfseries}{\thesubsection}{1em}{}{}
+\titlespacing{\subsection}{0pt}{-3pt}{0pt} % XXX 调整行距后@mckelvin 人工调的
 \titlecontents{subsection}[1.0ex]
         {}
         {\wuhao\hspace{2em}\thecontentslabel\hspace{1em}}
@@ -232,7 +239,7 @@
 %%% }
 
 %%% 4级标题 DEPRECATED {
-\titleformat{\subsubsection}[hang]{\xiaosi\songti\bfseries}{\thesubsubsection}{1em}{}{}
+\titleformat{\subsubsection}[hang]{\onehalfspacing \xiaosi\songti\bfseries}{\thesubsubsection}{1em}{}{}
 \titlespacing{\subsubsection}{0pt}{0.0\baselineskip}{0.0\baselineskip}
 \titlecontents{subsubsection}[1.0ex]
         {}
@@ -245,9 +252,8 @@
 %%% 中文摘要及关键词 {
 \newenvironment{abstractc}
 {
-    \titlespacing{\chapter}{0pt}{24pt}{18pt}
+    \titlespacing{\chapter}{0pt}{-3pt}{18pt} % XXX 调整行距后@mckelvin 人工调的
     \chapter{\zjut@label@abstracttitlec}
-    \titlespacing{\chapter}{0pt}{18pt}{18pt}
 }{}
 \newcommand\keywordsc[1]{\vspace{1em}\noindent%
     {\songti\xiaosi\textbf{\zjut@label@keywordsc}}\quad{\songti\xiaosi{#1}}%
@@ -257,9 +263,8 @@
 %%% English Abstract and Keywords {
 \newenvironment{abstracte}
 {
-    \titlespacing{\chapter}{0pt}{24pt}{18pt}
+    \titlespacing{\chapter}{0pt}{-3pt}{18pt} % XXX 调整行距后@mckelvin 人工调的
     \chapter{\zjut@label@abstracttitlee}
-    \titlespacing{\chapter}{0pt}{18pt}{18pt}
 }{}
 \newcommand\keywordse[1]{\vspace{1em}\noindent%
 	{\tnroman\xiaosi\textbf{\zjut@label@keywordse}}\quad{\songti\xiaosi{#1}}%
@@ -332,6 +337,7 @@
    \setlength{\itemindent}{0pt}
    \setlength{\leftmargin}{\labelwidth+\labelsep}
    \addtolength{\itemsep}{-0.7em}
+   \onehalfspacing
    \usecounter{enumiv}%
    \let\p@enumiv\@empty
    \renewcommand\theenumiv{\@arabic\c@enumiv}}%
@@ -345,6 +351,7 @@
 	{\@latex@warning{Empty `thebibliography' environment}}%
  \endlist\frenchspacing}
  \makeatother
+
 
 %   \addtolength{\bibsep}{-0.5em} % 缩小参考文献间的垂直间距
 %   \setlength{\bibhang}{2em} %每个条目自第二行起缩进的距离
